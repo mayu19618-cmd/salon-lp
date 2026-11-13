@@ -11,6 +11,11 @@
   </style>
 </head>
 <body>
-  <img src="lp.png" alt="Lumiere LP">
+  <picture>
+    <!-- スマホ（幅 768px 以下）: lp-mobile.png を表示 -->
+    <source srcset="lp-mobile.png" media="(max-width: 768px)">
+    <!-- PC: lp.png を表示 -->
+    <img src="lp.png" alt="Lumiere LP">
+  </picture>
 </body>
 </html>
