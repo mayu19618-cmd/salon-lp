@@ -5,12 +5,326 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lumiere</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #fff; }
-    img { display: block; width: 100%; height: auto; }
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /*
+      横スクロール抑制。
+      transform: scale() はレイアウトサイズを変えないため、
+      縮小時に右側にはみ出すレイアウト領域を overflow-x: hidden で隠す。
+    */
+    html, body {
+      overflow-x: hidden;
+      background: #fff;
+    }
+
+    /*
+      Figmaフレーム (14:89)。
+      JS が transform: scale() と margin-bottom の補正を動的に設定する。
+      transform-origin: top left → 左上起点で縮小し、JS側で水平中央揃えを行う。
+    */
+    .lp-frame {
+      position: relative;
+      width: 1574px;
+      height: 8287px;
+      transform-origin: top left;
+    }
+
+    /* 全直接子要素を絶対配置（Figmaの座標系を再現するために必須） */
+    .lp-frame > * {
+      position: absolute;
+    }
+
+    /* クロップコンテナ（woman-photo.png を複数箇所でトリミング） */
+    .crop {
+      overflow: hidden;
+    }
+
+    .crop img {
+      position: absolute;
+      max-width: none;
+    }
+
+    /* CTAボタン（<a>要素、ホバーオーバーレイ付き） */
+    .cta-btn {
+      cursor: pointer;
+      display: block;
+      padding: 0;
+      overflow: hidden;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .cta-btn img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /*
+      ホバー時オーバーレイ:
+      #D0E4F5（水色）を不透明度0→15%に変化させる。
+      元画像の文字・影・立体感はそのまま維持される。
+    */
+    .cta-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(208, 228, 245, 0);
+      transition: background-color 0.25s ease;
+      pointer-events: none;
+    }
+
+    .cta-btn:hover::after,
+    .cta-btn:focus-visible::after {
+      background: rgba(208, 228, 245, 0.15);
+    }
+
+    /* キーボードフォーカス時のアウトライン（マウス操作では非表示） */
+    .cta-btn:focus-visible {
+      outline: 3px solid #3b8ed4;
+      outline-offset: 3px;
+    }
   </style>
 </head>
 <body>
-  <img src="lp.png" alt="Lumiere LP">
+  <div class="lp-frame">
+
+      <!--
+        描画順（Figmaレイヤー順通り / 後に書いたものが前面）
+        node: 1:2 → 14:19 → 14:17 → 8:23 → 8:25 → 7:10 → 8:27
+              → 6:8 → 14:85 → 14:30 → 4:4 → 5:6 → 9:32 → 7:14
+              → 8:20 → 8:19 → 8:21 → 8:22 → 9:31 → 12:2 → 12:3
+              → 13:4 → 14:6 → 14:7 → 14:11 → 14:14 → 14:25
+              → 14:84 → 14:87 → 16:90（最前面）
+      -->
+
+      <!-- [1] node 1:2 — Rectangle 1（白背景SVG、全体背景） -->
+      <div style="left:2px; top:305px; width:1570px; height:7982px;">
+        <img src="images/figma/bg-rectangle.svg" alt=""
+             style="display:block; width:100%; height:100%;" />
+      </div>
+
+      <!-- [2] node 14:19 — LP11_1（LINEお問い合わせセクション②） -->
+      <div style="left:2px; top:6402px; width:1570px; height:403px;">
+        <img src="images/figma/lp11.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [3] node 14:17 — ぷるんっ。CTAボタン③ -->
+      <a class="cta-btn"
+         style="left:490px; top:6489px; width:591px; height:177px;">
+        <img src="images/figma/btn-purunto.png" alt="LINEでお問い合わせ" />
+      </a>
+
+      <!-- [4] node 8:23 — 女性写真クロップ③（y:976、ファーストビュー直下） -->
+      <div class="crop"
+           style="left:1px; top:976px; width:1570px; height:1968px;">
+        <img src="images/figma/woman-photo.png" alt=""
+             style="left:-88.09%; top:-0.02%; width:188.09%; height:100.03%;" />
+      </div>
+
+      <!-- [5] node 8:25 — 女性写真クロップ④（y:3770） -->
+      <div class="crop"
+           style="left:0; top:3770px; width:1570px; height:1968px;">
+        <img src="images/figma/woman-photo.png" alt=""
+             style="left:-88.12%; top:12.76%; width:188.09%; height:100.03%;" />
+      </div>
+
+      <!-- [6] node 7:10 — ぷるんっ。CTAボタン① -->
+      <a class="cta-btn"
+         style="left:486px; top:1123px; width:591px; height:177px;">
+        <img src="images/figma/btn-purunto.png" alt="LINEでお問い合わせ" />
+      </a>
+
+      <!-- [7] node 8:27 — ぷるんっ。CTAボタン② -->
+      <a class="cta-btn"
+         style="left:506px; top:4418px; width:591px; height:177px;">
+        <img src="images/figma/btn-purunto.png" alt="LINEでお問い合わせ" />
+      </a>
+
+      <!-- [8] node 6:8 — 女性写真クロップ②（y:6805、FAQセクション背景） -->
+      <div class="crop"
+           style="left:2px; top:6805px; width:1572px; height:1073px;">
+        <img src="images/figma/woman-photo.png" alt=""
+             style="left:-123.18%; top:0; width:223.14%; height:217.99%;" />
+      </div>
+
+      <!-- [9] node 14:85 — 女性写真クロップ⑥（y:7878、フッター背景） -->
+      <div class="crop"
+           style="left:2px; top:7878px; width:1570px; height:409px;">
+        <img src="images/figma/woman-photo.png" alt=""
+             style="left:-123.18%; top:-28.36%; width:223.14%; height:571.35%;" />
+      </div>
+
+      <!-- [10] node 14:30 — LP12_1（アクセスセクション） -->
+      <div style="left:4px; top:7187px; width:1570px; height:691px;">
+        <img src="images/figma/lp12.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [11] node 4:4 — アートボード 1のコピー 1（LINEボタンセクション） -->
+      <div style="left:1px; top:1366px; width:1570px; height:511px;">
+        <img src="images/figma/artboard-section.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [12] node 5:6 — Rectangle 3（水色背景 #d6e8f6） -->
+      <div style="left:1px; top:1837px; width:1570px; height:816px;
+                  background-color:#d6e8f6;"></div>
+
+      <!-- [13] node 9:32 — 女性写真クロップ⑤（y:4970） -->
+      <div class="crop"
+           style="left:2px; top:4970px; width:1570px; height:1158px;">
+        <img src="images/figma/woman-photo.png" alt=""
+             style="left:-88.12%; top:21.69%; width:188.09%; height:170.01%;" />
+      </div>
+
+      <!-- [14] node 7:14 — Rectangle 5（白背景） -->
+      <div style="left:0; top:2567px; width:1570px; height:1772px;
+                  background-color:#ffffff;"></div>
+
+      <!-- [15] node 8:20 — LP5_1（ステップ紹介②） -->
+      <div style="left:48px; top:3213px; width:1475px; height:480px;">
+        <img src="images/figma/lp5.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [16] node 8:19 — LP4_1（ステップ紹介①） -->
+      <div style="left:48px; top:2653px; width:1475px; height:480px;">
+        <img src="images/figma/lp4.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [17] node 8:21 — LP6_1（ステップ紹介③） -->
+      <div style="left:48px; top:3773px; width:1475px; height:480px;">
+        <img src="images/figma/lp6.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [18] node 8:22 — LP3_1（こんな悩みありませんか？） -->
+      <div style="left:17px; top:1943px; width:1536px; height:520px;">
+        <img src="images/figma/lp3.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [19] node 9:31 — LP7_1（LINE CTAセクション） -->
+      <div style="left:0; top:4674px; width:1570px; height:715px;">
+        <img src="images/figma/lp7.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [20] node 12:2 — LP8_1（価格セクション） -->
+      <div style="left:2px; top:5389px; width:1570px; height:438px;">
+        <img src="images/figma/lp8.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [21] node 12:3 — Rectangle 6（白背景） -->
+      <div style="left:2px; top:5827px; width:1570px; height:602px;
+                  background-color:#ffffff;"></div>
+
+      <!-- [22] node 13:4 — LP9_1（POINT・特徴セクション） -->
+      <div style="left:50px; top:5888px; width:1475px; height:480px;">
+        <img src="images/figma/lp9.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [23] node 14:6 — LP10_1（FAQセクション本文） -->
+      <div style="left:19px; top:6787px; width:1536px; height:400px;">
+        <img src="images/figma/lp10.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [24] node 14:7 — chevron-down ①（FAQ行1） -->
+      <img src="images/figma/icon-chevron-down.svg" alt=""
+           style="left:1406px; top:6900px; width:61px; height:61px; display:block;" />
+
+      <!-- [25] node 14:11 — chevron-down ②（FAQ行2） -->
+      <img src="images/figma/icon-chevron-down.svg" alt=""
+           style="left:1406px; top:6982px; width:61px; height:61px; display:block;" />
+
+      <!-- [26] node 14:14 — chevron-down ③（FAQ行3） -->
+      <img src="images/figma/icon-chevron-down.svg" alt=""
+           style="left:1406px; top:7064px; width:61px; height:61px; display:block;" />
+
+      <!-- [27] node 14:25 — map-pin（アクセスセクション） -->
+      <img src="images/figma/icon-map-pin.svg" alt=""
+           style="left:946px; top:7389px; width:75px; height:75px; display:block;" />
+
+      <!-- [28] node 14:84 — LP13_1（フッター画像） -->
+      <div style="left:4px; top:7878px; width:1570px; height:409px;">
+        <img src="images/figma/lp13.png" alt=""
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+      <!-- [29] node 14:87 — ぷるんっ。CTAボタン④（小サイズ版） -->
+      <a class="cta-btn"
+         style="left:589px; top:8130px; width:401px; height:120px;">
+        <img src="images/figma/btn-purunto.png" alt="LINEでお問い合わせ" />
+      </a>
+
+      <!-- [30] node 16:90 — LP1_1（ヒーロービジュアル、最前面） -->
+      <div style="left:0; top:0; width:1570px; height:1047px;">
+        <img src="images/figma/lp1.png" alt="Lumiere"
+             style="display:block; width:100%; height:100%; object-fit:cover;" />
+      </div>
+
+    </div>
+
+  <script>
+    /*
+     * CTA_URL — CTAボタン全4箇所の遷移先URLをここ1箇所で管理する。
+     * 変更するときはこの値だけ書き換えれば全ボタンに反映される。
+     */
+    var CTA_URL = 'https://www.google.com/?hl=ja';
+
+    /* 全CTAボタン（.cta-btn）にURL・ターゲット・rel を一括設定 */
+    document.querySelectorAll('.cta-btn').forEach(function (a) {
+      a.href   = CTA_URL;
+      a.target = '_blank';
+      a.rel    = 'noopener noreferrer';
+    });
+
+    (function () {
+      var DESIGN_W = 1574;   // Figmaフレーム幅（px）
+      var DESIGN_H = 8287;   // Figmaフレーム高さ（px）
+
+      function update() {
+        var vw = document.documentElement.clientWidth;
+        var scale = vw >= DESIGN_W ? 1 : vw / DESIGN_W;
+        var frame = document.querySelector('.lp-frame');
+
+        if (scale < 1) {
+          /*
+            縮小時:
+            ・transform-origin: top left でスケール → 視覚幅 = vw（横方向がぴったり収まる）
+            ・marginLeft = 0（左端揃え）
+            ・margin-bottom でレイアウト高さを視覚高さに合わせて補正
+              layout height (8287px) + marginBottom (負値) = DESIGN_H * scale
+          */
+          frame.style.transform    = 'scale(' + scale + ')';
+          frame.style.marginLeft   = '0';
+          frame.style.marginBottom = Math.floor(DESIGN_H * scale - DESIGN_H) + 'px';
+        } else {
+          /*
+            原寸表示時（1574px 以上）:
+            ・transform なし
+            ・marginLeft で水平中央揃え
+          */
+          frame.style.transform    = 'none';
+          frame.style.marginLeft   = Math.floor((vw - DESIGN_W) / 2) + 'px';
+          frame.style.marginBottom = '0';
+        }
+      }
+
+      update();
+      window.addEventListener('resize', update);
+    })();
+  </script>
 </body>
 </html>
